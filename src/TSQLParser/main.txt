@@ -1,0 +1,19 @@
+static void Main(string[] args)
+        {
+            var sql = @"select firstname, lastname FROM persons as p;
+                SELECT id, name FROM companies;
+                select s.test from (select 'hello' as test) as s;";
+
+            TSqlParser parser = new TSql120Parser(true);
+            IList<ParseError> parseErrors;
+            TSqlFragment sqlFragment = parser.Parse(new StringReader(sql), out parseErrors);
+
+            if (parseErrors.Count > 0) Console.WriteLine("Errors:");
+            parseErrors.Select(e => e.Message.Indent(2)).ToList().ForEach(Console.WriteLine);
+
+            OwnVisitor visitor = new OwnVisitor();
+            sqlFragment.Accept(visitor);
+
+            Console.WriteLine("Done.");
+            Console.ReadKey();
+        }
